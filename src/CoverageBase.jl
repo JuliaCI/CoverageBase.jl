@@ -5,11 +5,15 @@ export testnames, runtests, merge_coverage
 const need_inlining = ["resolve", "reflection", "meta", "pkg"]
 
 function julia_top()
+    dir = joinpath(JULIA_HOME, "..", "share", "julia")
+    if isdir(joinpath(dir,"base")) && isdir(joinpath(dir,"test"))
+        return dir
+    end
     dir = JULIA_HOME
     while !isdir(joinpath(dir,"base"))
         dir, _ = splitdir(dir)
         if dir == "/"
-            error("Error parsing top dir")
+            error("Error parsing top dir; JULIA_HOME = $JULIA_HOME")
         end
     end
     dir
