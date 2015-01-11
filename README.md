@@ -26,12 +26,11 @@ echo $(date)
 cd /somedirectory/julia-coverage
 REPO_TOKEN=<your token here> /path/to/CoverageBase/run_coverage.sh
 ```
+`REPO_TOKEN` should be set for the Coveralls.io repository you want to
+deposit the results in. You can find the token on the repo's main page
+on Coveralls, if you are an owner of the corresponding GitHub
+repository.
 
-- `REPO_TOKEN` should be set for the Coveralls.io repository you want
-  to deposit the results in. You can get this information from that
-  repo's main page on Coveralls, if you are an owner of the
-  corresponding GitHub repository.
-
-- Optionally, set up a `cron` job to run the shell script above on a
+- Optionally, set up a `cron` job to run the above shell script on a
   regular basis. It's probably wise to direct the output to a log file
   so you can inspect the output in cases of trouble.
