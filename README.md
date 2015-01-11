@@ -1,6 +1,7 @@
 # CoverageBase
 
 [![Build Status](https://travis-ci.org/timholy/CoverageBase.jl.svg?branch=master)](https://travis-ci.org/timholy/CoverageBase.jl)
+[![Coverage Status](https://coveralls.io/repos/timholy/CoverageBase.jl/badge.png)](https://coveralls.io/r/timholy/CoverageBase.jl)
 
 A package for measuring the internal test coverage of the [Julia](http://julialang.org/) programming langauge.
 
@@ -15,10 +16,11 @@ However, this is not sufficient on its own, particularly if you want to submit r
 
 - A checkout of [julia's master
   branch](https://github.com/JuliaLang/julia), one that you don't mind
-  updating every time you want to run coverage statistics.  Let's assume
-  this checkout is in `/somedirectory/julia-coverage`.
+  updating to the current master every time you run coverage
+  statistics.  Let's assume this checkout is in
+  `/somedirectory/julia-coverage`.
 
-- A `bash` script of the following form:
+- A `bash` script similar to the following:
 ```sh
 #! /bin/bash
 
