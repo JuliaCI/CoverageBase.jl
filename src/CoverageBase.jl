@@ -1,5 +1,7 @@
 module CoverageBase
 
+export testnames, runtests, merge_coverage
+
 const need_inlining = ["resolve", "reflection", "meta", "pkg"]
 
 function julia_top()
