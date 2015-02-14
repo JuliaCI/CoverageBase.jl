@@ -28,8 +28,8 @@ function testnames()
     ast, _ = parse(readall(joinpath(testdir, "runtests.jl")), 1, greedy=true)
     ast.args[1] == :testnames || error("error parsing testnames")
     names = eval(ast.args[2])
-    names = filter(x->!in(x, [need_inlining, "linalg"]), names)
-    append!(names, ["unicode", "linalg1", "linalg2", "linalg3", "linalg4", "linalg/lapack", "linalg/triangular", "linalg/tridiag", "linalg/pinv", "linalg/cholmod", "linalg/umfpack", "linalg/givens", "parallel"])
+    names = filter(x -> !in(x, [need_inlining, "linalg", "sparse"]), names)
+    append!(names, ["unicode", "linalg1", "linalg2", "linalg3", "linalg4", "linalg/lapack", "linalg/triangular", "linalg/tridiag", "linalg/pinv", "linalg/cholmod", "linalg/umfpack", "linalg/givens", "parallel", "sparse/sparse", "sparse/cholmod", "sparse/umfpack"])
 end
 
 function runtests(names)
