@@ -2,7 +2,7 @@ module CoverageBase
 
 export testnames, runtests, merge_coverage
 
-const need_inlining = ["resolve", "reflection", "meta", "pkg"]
+const need_inlining = ["reflection", "meta"]
 
 function julia_top()
     dir = joinpath(JULIA_HOME, "..", "share", "julia")
