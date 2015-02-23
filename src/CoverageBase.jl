@@ -24,7 +24,7 @@ const testdir = joinpath(topdir, "test")
 include(joinpath(testdir, "choosetests.jl"))
 
 function testnames()
-    Base.compileropts().can_inline == 1 && return need_inlining
+    Base.JLOptions().can_inline == 1 && return need_inlining
 
     names, _ = choosetests()
     filter!(x -> !in(x, need_inlining), names)
