@@ -28,6 +28,9 @@ function testnames()
 
     names, _ = choosetests()
     filter!(x -> !in(x, need_inlining), names)
+
+    # Manually add in `pkg`, which is disabled so that `make testall` passes on machines without internet access
+    push!(names, "pkg")
     names
 end
 
