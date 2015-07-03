@@ -21,3 +21,16 @@ for ri in r
         error("test not recognized")
     end
 end
+
+cr1 = [("a",[1,nothing,1,nothing]),
+      ("b",[nothing,5])]
+cr2 = [("a",[3,nothing,0,2])]
+cr = CoverageBase.merge_coverage_codecov(cr1, cr2)
+@test length(cr) == 2
+for ri in r
+    if haskey(ri,"a")
+        @test ri["a"] == [3,nothing,1,2]
+    elseif haskey(ri,"b")
+        @test ri["b"] == [nothing,5]
+    end
+end
