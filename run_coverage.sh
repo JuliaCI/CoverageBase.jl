@@ -11,7 +11,7 @@ make
 rm usr/lib/julia/sys.so
 
 # Clean old *.cov files
-rm $(find base -name "*.jl.cov")
+rm $(find base -name "*.jl.*cov")
 
 # Run coverage with inlining on, to test the few that don't run with it off
 cd test
@@ -20,7 +20,7 @@ cd ..
 
 # Analyze results
 ./julia -e 'using Coverage, HDF5, JLD; results=Coveralls.process_folder("base"); save("coverage_inline.jld", "results", results)'
-rm $(find base -name "*.jl.cov")
+rm $(find base -name "*.jl.*cov")
 
 # Run coverage with inline=no
 cd test
