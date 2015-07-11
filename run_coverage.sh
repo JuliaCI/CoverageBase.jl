@@ -8,14 +8,13 @@ git checkout master
 git pull
 make cleanall
 make
-rm usr/lib/julia/sys.so
 
 # Clean old *.cov files
 rm $(find base -name "*.jl.*cov")
 
 # Run coverage with inlining on, to test the few that don't run with it off
 cd test
-../julia --code-coverage=all -e 'import CoverageBase; using Base.Test; CoverageBase.runtests(CoverageBase.testnames())'
+../julia --precompiled=no --code-coverage=all -e 'import CoverageBase; using Base.Test; CoverageBase.runtests(CoverageBase.testnames())'
 cd ..
 
 # Analyze results
@@ -24,7 +23,7 @@ rm $(find base -name "*.jl.*cov")
 
 # Run coverage with inline=no
 cd test
-../julia --inline=no --code-coverage=all -e 'import CoverageBase; using Base.Test; CoverageBase.runtests(CoverageBase.testnames())'
+../julia --precompiled=no --inline=no --code-coverage=all -e 'import CoverageBase; using Base.Test; CoverageBase.runtests(CoverageBase.testnames())'
 cd ..
 
 # Analyze results
