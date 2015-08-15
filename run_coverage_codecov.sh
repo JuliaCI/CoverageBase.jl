@@ -30,4 +30,4 @@ cd ..
 ./julia -e 'using Coverage, HDF5, JLD; results=Codecov.process_folder("base"); save("coverage_noinline.jld", "results", results)'
 
 # Merge results and submit
-./julia -e 'using Coverage, CoverageBase, HDF5, JLD; r1 = load("coverage_noinline.jld", "results"); r2 = load("coverage_inline.jld", "results"); r = CoverageBase.merge_coverage_codecov(r1, r2); Codecov.submit_token(r)'
+./julia -e 'using Coverage, CoverageBase, HDF5, JLD; r1 = load("coverage_noinline.jld", "results"); r2 = load("coverage_inline.jld", "results"); r = CoverageBase.merge_coverage(r1, r2); Codecov.submit_token(r)'
