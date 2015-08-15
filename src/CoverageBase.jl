@@ -1,5 +1,5 @@
 module CoverageBase
-
+using Coverage
 export testnames, runtests, merge_coverage
 
 const need_inlining = ["reflection", "meta"]
@@ -59,12 +59,13 @@ function merge_coverage(r1a, r2a)
     r1 = todict(r1a)
     r2 = todict(r2a)
     files = union(collect(keys(r1)), collect(keys(r2)))
-    r = []
+    r = FileCoverage[]
     for f in files
         src = haskey(r1, f) ? r1[f][1] : r2[f][1]
         c1 = haskey(r1, f) ? r1[f][2] : []
         c2 = haskey(r2, f) ? r2[f][2] : []
-        push!(r, Dict("name" => f, "source" => src, "coverage" => merge_coverage_counts(c1,c2)))
+        ff = FileCoverage(f,src,Coverage.merge_coverage_counts(c1,c2))
+        push!(r,ff)
     end
     r
 end
@@ -72,7 +73,7 @@ end
 function todict(results)
     d = Dict{Any,Any}()
     for r in results
-        d[r["name"]] = (r["source"], r["coverage"])
+        d[r.filename] = (r.source, r.coverage)
     end
     d
 end
