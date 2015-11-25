@@ -20,5 +20,5 @@ cd test
 cd ..
 
 # Analyze and submit results
-./julia -e 'using Coverage, HDF5, JLD; results=Coveralls.process_folder("base"); Coveralls.submit_token(results)'
+./julia -e 'using Coverage; results=Coveralls.process_folder("base"); Coveralls.submit_token(results)'
 rm $(find base -name "*.jl.*cov")

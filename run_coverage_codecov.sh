@@ -20,4 +20,4 @@ cd test
 cd ..
 
 # Analyze and submit results
-./julia -e 'using Coverage, HDF5, JLD; results=Codecov.process_folder("base"); Codecov.submit_token(results)'
+./julia -e 'using Coverage; results=Codecov.process_folder("base"); Codecov.submit_token(results)'
