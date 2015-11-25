@@ -12,22 +12,13 @@ make
 # Clean old *.cov files
 rm $(find base -name "*.jl.*cov")
 
+cd test
 # Run coverage with inlining on, to test the few that don't run with it off
-cd test
 ../julia --precompiled=no --code-coverage=all -e 'import CoverageBase; using Base.Test; CoverageBase.runtests(CoverageBase.testnames())'
-cd ..
-
-# Analyze results
-./julia -e 'using Coverage, HDF5, JLD; results=Coveralls.process_folder("base"); save("coverage_inline.jld", "results", results)'
-rm $(find base -name "*.jl.*cov")
-
-# Run coverage with inline=no
-cd test
+# Run coverage without inlining, to test the rest of base
 ../julia --precompiled=no --inline=no --code-coverage=all -e 'import CoverageBase; using Base.Test; CoverageBase.runtests(CoverageBase.testnames())'
 cd ..
 
-# Analyze results
-./julia -e 'using Coverage, HDF5, JLD; results=Coveralls.process_folder("base"); save("coverage_noinline.jld", "results", results)'
-
-# Merge results and submit
-./julia -e 'using Coverage, CoverageBase, HDF5, JLD; r1 = load("coverage_noinline.jld", "results"); r2 = load("coverage_inline.jld", "results"); r = CoverageBase.merge_coverage(r1, r2); Coveralls.submit_token(r)'
+# Analyze and submit results
+./julia -e 'using Coverage, HDF5, JLD; results=Coveralls.process_folder("base"); Coveralls.submit_token(results)'
+rm $(find base -name "*.jl.*cov")
