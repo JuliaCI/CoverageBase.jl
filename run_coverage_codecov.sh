@@ -1,6 +1,6 @@
 #! /bin/bash
 # NOTE: this script must be run with the environment variable
-# REPO_TOKEN set to your codecov.io token.
+# CODECOV_REPO_TOKEN set to your codecov.io token.
 # See codecov.io API documentation
 
 # Build julia
@@ -20,4 +20,4 @@ cd test
 cd ..
 
 # Analyze and submit results
-./julia -e 'using Coverage; results=Codecov.process_folder("base"); Codecov.submit_token(results)'
+./julia -e 'using Coverage; results=Codecov.process_folder("base"); git_info = Any[:branch => Base.GIT_VERSION_INFO.branch,:commit => Base.GIT_VERSION_INFO.commit,:token => ENV["CODECOV_REPO_TOKEN"]]; Codecov.submit_generic(results; git_info...);'
