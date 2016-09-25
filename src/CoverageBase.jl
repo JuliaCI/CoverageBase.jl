@@ -2,7 +2,7 @@ module CoverageBase
 using Coverage
 export testnames, runtests
 
-const need_inlining = ["reflection", "meta"]
+const need_inlining = []
 
 function julia_top()
     dir = joinpath(JULIA_HOME, "..", "share", "julia")
@@ -24,10 +24,10 @@ const testdir = joinpath(topdir, "test")
 include(joinpath(testdir, "choosetests.jl"))
 
 function testnames()
-    Base.JLOptions().can_inline == 1 && return need_inlining
-
     names, _ = choosetests()
-    filter!(x -> !in(x, need_inlining), names)
+    if Base.JLOptions().can_inline == 0
+        filter!(x -> !in(x, need_inlining), names)
+    end
 
     # Manually add in `pkg`, which is disabled so that `make testall` passes on machines without internet access
     push!(names, "pkg")
