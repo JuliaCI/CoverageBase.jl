@@ -1,4 +1,4 @@
-__precompile__(false)
+__precompile__(true)
 module CoverageBase
 using Coverage
 export testnames, runtests
@@ -19,14 +19,14 @@ function julia_top()
     end
     dir
 end
-const topdir = julia_top()
-const basedir = joinpath(topdir, "base")
-const testdir = joinpath(topdir, "test")
 
 module BaseTestRunner
-import ..testdir
+import ..julia_top
+let topdir = julia_top(),
+    testdir = joinpath(topdir, "test")
 include(joinpath(testdir, "choosetests.jl"))
 include(joinpath(testdir, "testdefs.jl"))
+end
 end
 
 function testnames()
@@ -41,6 +41,8 @@ function testnames()
 end
 
 function runtests(names)
+    topdir = julia_top()
+    testdir = joinpath(topdir, "test")
     cd(testdir) do
         for tst in names
             @time BaseTestRunner.runtests(tst)
