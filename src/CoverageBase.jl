@@ -1,3 +1,4 @@
+__precompile__(true)
 module CoverageBase
 using Coverage
 export testnames, runtests
@@ -18,13 +19,18 @@ function julia_top()
     end
     dir
 end
-const topdir = julia_top()
-const basedir = joinpath(topdir, "base")
-const testdir = joinpath(topdir, "test")
+
+module BaseTestRunner
+import ..julia_top
+let topdir = julia_top(),
+    testdir = joinpath(topdir, "test")
 include(joinpath(testdir, "choosetests.jl"))
+include(joinpath(testdir, "testdefs.jl"))
+end
+end
 
 function testnames()
-    names, _ = choosetests()
+    names, _ = BaseTestRunner.choosetests()
     if Base.JLOptions().can_inline == 0
         filter!(x -> !in(x, need_inlining), names)
     end
@@ -35,10 +41,11 @@ function testnames()
 end
 
 function runtests(names)
+    topdir = julia_top()
+    testdir = joinpath(topdir, "test")
     cd(testdir) do
         for tst in names
-            println(tst)
-            include(tst*".jl")
+            @time BaseTestRunner.runtests(tst)
         end
     end
 end
