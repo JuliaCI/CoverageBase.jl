@@ -6,15 +6,15 @@ export testnames, runtests
 const need_inlining = []
 
 function julia_top()
-    dir = joinpath(JULIA_HOME, "..", "share", "julia")
+    dir = joinpath(Sys.BINDIR, "..", "share", "julia")
     if isdir(joinpath(dir,"base")) && isdir(joinpath(dir,"test"))
         return dir
     end
-    dir = JULIA_HOME
+    dir = Sys.BINDIR
     while !isdir(joinpath(dir,"base"))
         dir, _ = splitdir(dir)
         if dir == "/"
-            error("Error parsing top dir; JULIA_HOME = $JULIA_HOME")
+            error("Error parsing top dir; Sys.BINDIR = $(Sys.BINDIR)")
         end
     end
     dir
