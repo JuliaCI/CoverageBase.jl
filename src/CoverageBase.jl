@@ -1,15 +1,11 @@
 __precompile__(true)
 module CoverageBase
 using Coverage
+using Compat
+using Compat.Sys: BINDIR
 export testnames, runtests
 
 const need_inlining = []
-
-if VERSION < v"0.7.0-DEV.3073"
-    const BINDIR = JULIA_HOME
-else
-    using Base.Sys: BINDIR
-end
 
 function julia_top()
     dir = joinpath(BINDIR, "..", "share", "julia")
@@ -48,7 +44,8 @@ function julia_cmd()
     julia = Base.julia_cmd()
     inline = Base.JLOptions().can_inline == 0 ? "no" : "yes"
     cc = ("none", "user", "all")[Base.JLOptions().code_coverage + 1]
-    return `$julia --precompiled=no --inline=$inline --code-coverage=$cc`
+    precomp = VERSION >= v"0.7.0-DEV.1735" ? "sysimage-native-code" : "precompiled"
+    return `$julia --$precomp=no --inline=$inline --code-coverage=$cc`
 end
 
 function runtests(names)

@@ -9,6 +9,9 @@ git pull
 make cleanall
 make
 
+# Determine the correct option name
+PRECOMP="$(./julia -e 'print(VERSION >= v"0.7.0-DEV.1735" ? "sysimage-native-code" : "precompiled")')"
+
 # Clean old *.cov files
 rm $(find base -name "*.jl.*cov")
 
