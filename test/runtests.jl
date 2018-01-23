@@ -1,6 +1,7 @@
 using CoverageBase
 using Coverage
-using Base.Test
+using Compat
+using Compat.Test
 
 @test isdir(CoverageBase.julia_top())
 @test !isempty(testnames())

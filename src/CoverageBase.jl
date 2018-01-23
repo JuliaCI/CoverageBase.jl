@@ -5,16 +5,22 @@ export testnames, runtests
 
 const need_inlining = []
 
+if VERSION < v"0.7.0-DEV.3073"
+    const BINDIR = JULIA_HOME
+else
+    using Base.Sys: BINDIR
+end
+
 function julia_top()
-    dir = joinpath(JULIA_HOME, "..", "share", "julia")
+    dir = joinpath(BINDIR, "..", "share", "julia")
     if isdir(joinpath(dir,"base")) && isdir(joinpath(dir,"test"))
         return dir
     end
-    dir = JULIA_HOME
+    dir = BINDIR
     while !isdir(joinpath(dir,"base"))
         dir, _ = splitdir(dir)
         if dir == "/"
-            error("Error parsing top dir; JULIA_HOME = $JULIA_HOME")
+            error("Error parsing top directory; using Julia located at $BINDIR")
         end
     end
     dir
@@ -52,7 +58,11 @@ function runtests(names)
     julia = julia_cmd()
     script = """
         include("testdefs.jl")
-        @time testresult = runtests(ARGS[1])
+        @time testresult = if VERSION >= v"0.7.0-DEV.2588"
+            runtests(ARGS[1], joinpath(pwd(), ARGS[1]))
+        else
+            runtests(ARGS[1])
+        end
         # TODO: exit(testresult.anynonpass ? 1 : 0)
         """
     fail = false
