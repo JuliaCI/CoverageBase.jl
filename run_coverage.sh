@@ -9,14 +9,17 @@ git pull
 make cleanall
 make
 
+# Determine the correct option name
+PRECOMP="$(./julia -e 'print(VERSION >= v"0.7.0-DEV.1735" ? "sysimage-native-code" : "precompiled")')"
+
 # Clean old *.cov files
 rm $(find base -name "*.jl.*cov")
 
 cd test
 # Run coverage with inlining on, to test the few that don't run with it off
-../julia --precompiled=no --code-coverage=all -e 'import CoverageBase; using Base.Test; CoverageBase.runtests(CoverageBase.testnames())'
+../julia --$PRECOMP=no --code-coverage=all -e 'using CoverageBase, Compat, Compat.Test; CoverageBase.runtests(CoverageBase.testnames())'
 # Run coverage without inlining, to test the rest of base
-../julia --precompiled=no --inline=no --code-coverage=all -e 'import CoverageBase; using Base.Test; CoverageBase.runtests(CoverageBase.testnames())'
+../julia --$PRECOMP=no --inline=no --code-coverage=all -e 'using CoverageBase, Compat, Compat.Test; CoverageBase.runtests(CoverageBase.testnames())'
 cd ..
 
 # Analyze and submit results
