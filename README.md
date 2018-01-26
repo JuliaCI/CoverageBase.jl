@@ -1,7 +1,7 @@
 # CoverageBase
 
-[![Build Status](https://travis-ci.org/timholy/CoverageBase.jl.svg?branch=master)](https://travis-ci.org/timholy/CoverageBase.jl)
-[![Coverage Status](https://coveralls.io/repos/timholy/CoverageBase.jl/badge.png)](https://coveralls.io/r/timholy/CoverageBase.jl)
+[![Build Status](https://travis-ci.org/JuliaCI/CoverageBase.jl.svg?branch=master)](https://travis-ci.org/JuliaCI/CoverageBase.jl)
+[![Coverage Status](https://coveralls.io/repos/JuliaCI/CoverageBase.jl/badge.svg)](https://coveralls.io/r/JuliaCI/CoverageBase.jl)
 
 A package for measuring the internal test coverage of the [Julia](http://julialang.org/) programming langauge.
 
@@ -9,7 +9,7 @@ A package for measuring the internal test coverage of the [Julia](http://juliala
 
 You can install this on your local machine with
 ```julia
-Pkg.clone("https://github.com/timholy/CoverageBase.jl.git")
+Pkg.clone("https://github.com/JuliaCI/CoverageBase.jl.git")
 ```
 
 However, this is not sufficient on its own, particularly if you want to submit results to [Coveralls.io](https://coveralls.io/).  You should also set up the following:
