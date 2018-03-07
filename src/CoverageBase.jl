@@ -7,6 +7,12 @@ export testnames, runtests
 
 const need_inlining = []
 
+if VERSION >= v"0.7.0-DEV.4445"
+    _spawn(cmd) = run(pipeline(cmd, stdin=devnull), wait=false)
+else
+    _spawn(cmd) = spawn(cmd, devnull, stdout, stderr)
+end
+
 function julia_top()
     dir = joinpath(BINDIR, "..", "share", "julia")
     if isdir(joinpath(dir,"base")) && isdir(joinpath(dir,"test"))
@@ -65,10 +71,10 @@ function runtests(names)
     fail = false
     cd(testdir) do
         for tst in names
-            print_with_color(:bold, "RUNTEST: $tst\n")
+            printstyled("RUNTEST: $tst\n", bold=true)
             cmd = Cmd(`$julia -e $script -- $tst`, dir = testdir)
             try
-                success(spawn(cmd, DevNull, STDOUT, STDERR))
+                success(_spawn(cmd))
             catch err
                 bt = catch_backtrace()
                 println(STDERR)
