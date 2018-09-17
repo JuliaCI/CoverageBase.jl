@@ -9,7 +9,7 @@ A package for measuring the internal test coverage of the [Julia](http://juliala
 
 You can install this on your local machine with
 ```julia
-Pkg.clone("https://github.com/JuliaCI/CoverageBase.jl.git")
+(v1.1) pkg> add https://github.com/JuliaCI/CoverageBase.jl.git
 ```
 
 However, this is not sufficient on its own, particularly if you want to submit results to [Coveralls.io](https://coveralls.io/).  You should also set up the following:
