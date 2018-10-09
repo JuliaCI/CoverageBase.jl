@@ -8,5 +8,5 @@ notifications:
 # uncomment the following lines to override the default test script
 script:
   - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
-  - julia -e 'Pkg.clone(pwd()); Pkg.build("CoverageBase"); Pkg.test("CoverageBase"; coverage=true)'
-  - julia -e 'cd(Pkg.dir("CoverageBase")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())'
+  - julia -e 'using Pkg; Pkg.build(); Pkg.test("CoverageBase"; coverage=true)'
+  - julia -e 'using Pkg; Pkg.add(PackageSpec(name="Coverage", rev="master")); using Coverage; Codecov.submit(Codecov.process_folder())'
