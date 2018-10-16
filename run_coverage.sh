@@ -17,9 +17,9 @@ rm $(find base -name "*.jl.*cov")
 
 cd test
 # Run coverage with inlining on, to test the few that don't run with it off
-../julia --$PRECOMP=no --code-coverage=all -e 'using CoverageBase, Compat, Compat.Test; CoverageBase.runtests(CoverageBase.testnames())'
+../julia --$PRECOMP=no --code-coverage=all -e 'Pkg.add("Compat"); Pkg.resolve(); using CoverageBase, Compat, Compat.Test; CoverageBase.runtests(CoverageBase.testnames())'
 # Run coverage without inlining, to test the rest of base
-../julia --$PRECOMP=no --inline=no --code-coverage=all -e 'using CoverageBase, Compat, Compat.Test; CoverageBase.runtests(CoverageBase.testnames())'
+../julia --$PRECOMP=no --inline=no --code-coverage=all -e 'Pkg.add("Compat"); Pkg.resolve(); using CoverageBase, Compat, Compat.Test; CoverageBase.runtests(CoverageBase.testnames())'
 cd ..
 
 # Analyze and submit results
