@@ -13,7 +13,7 @@ make
 PRECOMP="$(./julia -e 'print(VERSION >= v"0.7.0-DEV.1735" ? "sysimage-native-code" : "precompiled")')"
 
 # Clean old *.cov files
-rm $(find base -name "*.jl.*cov")
+rm $(find base stdlib -name "*.jl.*cov")
 
 cd test
 # Run coverage with inlining on, to test the few that don't run with it off
