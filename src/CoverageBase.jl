@@ -1,32 +1,120 @@
 __precompile__(true)
 module CoverageBase
 using Coverage
-using Compat
-using Compat.Sys: BINDIR
 export testnames, runtests
+export fixpath, fixpath!, readsource!
 
 const need_inlining = []
 
-if VERSION >= v"0.7.0-DEV.4445"
-    _spawn(cmd) = run(pipeline(cmd, stdin=devnull), wait=false)
-else
-    _spawn(cmd) = spawn(cmd, devnull, stdout, stderr)
-end
-
-function julia_top()
-    dir = joinpath(BINDIR, "..", "share", "julia")
-    if isdir(joinpath(dir,"base")) && isdir(joinpath(dir,"test"))
-        return dir
-    end
-    dir = BINDIR
-    while !isdir(joinpath(dir,"base"))
-        dir, _ = splitdir(dir)
-        if dir == "/"
-            error("Error parsing top directory; using Julia located at $BINDIR")
+function __init__()
+    global _julia_top, julia_datapath
+    dir = String(normpath(Sys.BINDIR::String, Base.DATAROOTDIR, "julia", ""))
+    julia_datapath = dir
+    if !(isdir(joinpath(dir, "base")) && isdir(joinpath(dir, "test")))
+        # this branch shouldn't happen normally
+        dir = Sys.BINDIR::String
+        while !isdir(joinpath(dir, "base"))
+            dir, _ = splitdir(dir)
+            if dir == "/"
+                error("Error parsing top directory; using Julia located at $BINDIR")
+            end
         end
     end
-    dir
+    _julia_top = String(dir)
 end
+__init__()
+julia_top() = _julia_top::String
+
+"""
+    build_basepath
+Julia's top-level directory when Julia was built, as recorded by the entries in
+`Base._included_files`.
+"""
+const build_basepath = begin
+    sysimg_file = filter(x -> endswith(x[2], "sysimg.jl"), Base._included_files)[1][2]
+    joinpath(dirname(dirname(sysimg_file)), "")
+end
+const build_datapath = normpath(build_basepath, "usr", "bin", Base.DATAROOTDIR, "julia", "")
+const build_stdlibpath = joinpath(build_datapath, "stdlib", "v$(VERSION.major).$(VERSION.minor)", "")
+
+"""
+    fixpath(filename) -> filename
+
+Rewrite filenames inside the julia folder into relative paths.
+"""
+function fixpath(filename)
+    if startswith(filename, build_stdlibpath)
+        return joinpath("stdlib", filename[(sizeof(build_stdlibpath) + 1):end])
+    end
+    if startswith(filename, build_datapath)
+        return filename[(sizeof(build_datapath) + 1):end]
+    end
+    if startswith(filename, build_basepath)
+        return filename[(sizeof(build_basepath) + 1):end]
+    end
+    STDLIB = Sys.STDLIB::String
+    if startswith(filename, STDLIB) && filename[sizeof(STDLIB) + 1] == Base.Filesystem.pathsep()[1]
+        return joinpath("stdlib", filename[(sizeof(STDLIB) + 2):end])
+    end
+    datapath = julia_datapath::String
+    if startswith(filename, datapath)
+        return filename[(sizeof(datapath) + 1):end]
+    end
+    if julia_datapath != julia_top() && startswith(filename, julia_top())
+        return filename[(sizeof(julia_top()) + 1):end]
+    end
+    if !isabspath(filename)
+        return joinpath("base", filename)
+    end
+    return filename
+end
+
+"""
+    fixpath!(fcs::Vector{FileCoverage)) -> fcs
+
+Rewrite filenames inside the julia folder into relative paths.
+"""
+function fixpath!(fcs::Vector{FileCoverage})
+    for fc in fcs
+        fc.filename = fixpath(fc.filename)
+    end
+    return fcs
+end
+
+"""
+    fixabspath(fixpath(filename)) -> abspath
+
+Rewrite a fixpath back into a local absolute path.
+"""
+function fixabspath(fixfilename)
+    if isabspath(fixfilename)
+        path = fixfilename
+    elseif startswith(fixfilename, "stdlib") && fixfilename[7] == Base.Filesystem.pathsep()[1]
+        path = joinpath(Sys.STDLIB::String, fixfilename[8:end])
+    else
+        path = joinpath(julia_top(), fixfilename)
+    end
+    return path
+end
+
+
+"""
+    readsource!(filename) -> fcs
+
+Populate the .source fields.
+"""
+function readsource!(fcs::Vector{FileCoverage})
+    for fc in fcs
+        if isempty(fc.source)
+            path = fixabspath(fc.filename)
+            if isfile(path)
+                fc.source = read(path, String)
+            end
+        end
+    end
+    return fcs
+end
+
 
 module BaseTestRunner
 import ..julia_top
@@ -40,18 +128,12 @@ function testnames()
     if Base.JLOptions().can_inline == 0
         filter!(x -> !in(x, need_inlining), names)
     end
-
-    # Manually add in `pkg`, which is disabled so that `make testall` passes on machines without internet access
-    push!(names, "pkg")
-    names
+    return names
 end
 
 function julia_cmd()
     julia = Base.julia_cmd()
-    inline = Base.JLOptions().can_inline == 0 ? "no" : "yes"
-    cc = ("none", "user", "all")[Base.JLOptions().code_coverage + 1]
-    precomp = VERSION >= v"0.7.0-DEV.1735" ? "sysimage-native-code" : "precompiled"
-    return `$julia --$precomp=no --inline=$inline --code-coverage=$cc`
+    return `$julia --sysimage-native-code=no`
 end
 
 function runtests(names)
@@ -61,31 +143,27 @@ function runtests(names)
     julia = julia_cmd()
     script = """
         include("testdefs.jl")
-        @time testresult = if VERSION >= v"0.7.0-DEV.2588"
-            runtests(ARGS[1], joinpath(pwd(), ARGS[1]))
-        else
-            runtests(ARGS[1])
-        end
+        @time testresult = runtests(ARGS[1], joinpath(pwd(), ARGS[1]))
         # TODO: exit(testresult.anynonpass ? 1 : 0)
         """
-    fail = false
+    anyfail = false
     cd(testdir) do
         for tst in names
             printstyled("RUNTEST: $tst\n", bold=true)
-            cmd = Cmd(`$julia -e $script -- $tst`, dir = testdir)
+            cmd = `$julia -e $script -- $tst`
             try
-                success(_spawn(cmd))
+                run(pipeline(cmd, stdin=devnull))
             catch err
                 bt = catch_backtrace()
                 println(STDERR)
                 println(STDERR, "-"^40)
                 Base.display_error(STDERR, err, bt)
                 println(STDERR, "-"^40)
-                fail = true
+                anyfail = true
             end
         end
     end
-    !fail
+    return !anyfail
 end
 
 end # module
