@@ -156,10 +156,10 @@ function runtests(names)
                 run(pipeline(cmd, stdin=devnull))
             catch err
                 bt = catch_backtrace()
-                println(STDERR)
-                println(STDERR, "-"^40)
-                Base.display_error(STDERR, err, bt)
-                println(STDERR, "-"^40)
+                println(stderr)
+                println(stderr, "-"^40)
+                Base.display_error(stderr, err, bt)
+                println(stderr, "-"^40)
                 anyfail = true
             end
         end
