@@ -142,6 +142,7 @@ function runtests(names)
     testrunner = joinpath(@__DIR__, "testrunner.jl")
     julia = julia_cmd()
     script = """
+        using Distributed # from runtests.jl
         include("testdefs.jl")
         @time testresult = runtests(ARGS[1], joinpath(pwd(), ARGS[1]))
         # TODO: exit(testresult.anynonpass ? 1 : 0)
