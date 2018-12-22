@@ -35,4 +35,7 @@ end
     @test all(!isempty(c.source) for c in files) || files
 end
 
-runtests(["goto",])
+@testset "run tests" begin
+    @test runtests(["goto",])
+    @test_warn "ERROR: failed process" @test !runtests(["fail_does_not_even_exist", "goto"])
+end
