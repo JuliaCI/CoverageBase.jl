@@ -36,6 +36,6 @@ end
 end
 
 @testset "run tests" begin
-    @test runtests(["goto",])
+    @test runtests(["goto", "Test"])
     @test_warn "ERROR: failed process" @test !runtests(["fail_does_not_even_exist", "goto"])
 end

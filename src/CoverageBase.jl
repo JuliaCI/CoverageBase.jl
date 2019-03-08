@@ -131,6 +131,20 @@ function testnames()
     return names
 end
 
+function test_path(testdir, test)
+    t = split(test, '/')
+    if t[1] in BaseTestRunner.STDLIBS
+        STDLIB = Sys.STDLIB::String
+        if length(t) == 2
+            return joinpath(STDLIB, t[1], "test", t[2])
+        else
+            return joinpath(STDLIB, t[1], "test", "runtests")
+        end
+    else
+        return joinpath(testdir, test)
+    end
+end
+
 function julia_cmd()
     julia = Base.julia_cmd()
     return `$julia --sysimage-native-code=no`
@@ -139,19 +153,19 @@ end
 function runtests(names)
     topdir = julia_top()
     testdir = joinpath(topdir, "test")
-    testrunner = joinpath(@__DIR__, "testrunner.jl")
     julia = julia_cmd()
     script = """
         using Distributed # from runtests.jl
         include("testdefs.jl")
-        @time testresult = runtests(ARGS[1], joinpath(pwd(), ARGS[1]))
+        @time testresult = runtests(ARGS[1], ARGS[2])
         # TODO: exit(testresult.anynonpass ? 1 : 0)
         """
     anyfail = false
     cd(testdir) do
         for tst in names
             printstyled("RUNTEST: $tst\n", bold=true)
-            cmd = `$julia -e $script -- $tst`
+            tstpath = test_path(testdir, tst)
+            cmd = `$julia -e $script -- $tst $tstpath`
             try
                 run(pipeline(cmd, stdin=devnull))
             catch err
