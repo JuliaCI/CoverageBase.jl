@@ -1,10 +1,11 @@
 name = "CoverageBase"
 uuid = "0f34fb1e-4541-5b4c-aef0-c26dfe4a41db"
-version = "0.2.0"
+version = "0.2.1"
 
 [deps]
 Coverage = "a2441757-f6aa-5fb2-8edb-039e3f45d037"
 Distributed = "8ba89e20-285c-5b6f-9357-94700520ee1b"
+Logging = "56ddb016-857b-54e1-b83d-db4d58db5568"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 Sockets = "6462fe0b-24de-5631-8697-dd941f90decc"
 
