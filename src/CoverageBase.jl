@@ -157,6 +157,7 @@ function runtests(names)
     julia = julia_cmd()
     script = """
         using Distributed # from runtests.jl
+        print_testworker_started(swallow...) = nothing
         include("testdefs.jl")
         @time testresult = runtests(ARGS[1], ARGS[2])
         # TODO: exit(testresult.anynonpass ? 1 : 0)
