@@ -36,6 +36,7 @@ const build_basepath = begin
 end
 const build_datapath = normpath(build_basepath, "usr", "bin", Base.DATAROOTDIR, "julia", "")
 const build_stdlibpath = joinpath(build_datapath, "stdlib", "v$(VERSION.major).$(VERSION.minor)", "")
+const path_separators = Sys.iswindows() ? "\\/" : "/"
 
 """
     fixpath(filename) -> filename
@@ -53,7 +54,7 @@ function fixpath(filename)
         return filename[(sizeof(build_basepath) + 1):end]
     end
     STDLIB = Sys.STDLIB::String
-    if startswith(filename, STDLIB) && filename[sizeof(STDLIB) + 1] == Base.Filesystem.pathsep()[1]
+    if startswith(filename, STDLIB) && filename[sizeof(STDLIB) + 1] in path_separators
         return joinpath("stdlib", filename[(sizeof(STDLIB) + 2):end])
     end
     datapath = julia_datapath::String
@@ -89,7 +90,7 @@ Rewrite a fixpath back into a local absolute path.
 function fixabspath(fixfilename)
     if isabspath(fixfilename)
         path = fixfilename
-    elseif startswith(fixfilename, "stdlib") && fixfilename[7] == Base.Filesystem.pathsep()[1]
+    elseif startswith(fixfilename, "stdlib") && fixfilename[7] in path_separators
         path = joinpath(Sys.STDLIB::String, fixfilename[8:end])
     else
         path = joinpath(julia_top(), fixfilename)
@@ -156,6 +157,7 @@ function runtests(names)
     julia = julia_cmd()
     script = """
         using Distributed # from runtests.jl
+        print_testworker_started(swallow...) = nothing
         include("testdefs.jl")
         @time testresult = runtests(ARGS[1], ARGS[2])
         # TODO: exit(testresult.anynonpass ? 1 : 0)
