@@ -156,11 +156,24 @@ function runtests(names)
     testdir = joinpath(topdir, "test")
     julia = julia_cmd()
     script = """
-        using Distributed # from runtests.jl
+        push!(empty!(LOAD_PATH), "@stdlib") # don't inherit CoverageBase's Manifest
+        using Distributed, Test # from runtests.jl
         print_testworker_started(swallow...) = nothing
         include("testdefs.jl")
-        @time testresult = runtests(ARGS[1], ARGS[2])
-        # TODO: exit(testresult.anynonpass ? 1 : 0)
+        let
+            @time testresult = runtests(ARGS[1], ARGS[2])[1]
+            if testresult isa Test.TestSetException
+                for t in testresult.errors_and_fails
+                    show(t)
+                    println()
+                end
+                if testresult.fail + testresult.error > 0
+                    throw(testresult)
+                end
+            elseif testresult isa Exception
+                throw(testresult)
+            end
+        end
         """
     anyfail = false
     cd(testdir) do
