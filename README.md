@@ -1,7 +1,8 @@
 # CoverageBase
 
-[![Build Status](https://travis-ci.org/JuliaCI/CoverageBase.jl.svg?branch=master)](https://travis-ci.org/JuliaCI/CoverageBase.jl)
-[![codecov](https://codecov.io/gh/JuliaCI/CoverageBase.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/JuliaCI/CoverageBase.jl)
+[![Build Status](https://github.com/JuliaCI/CoverageBase.jl/workflows/CI/badge.svg)](https://github.com/JuliaCI/CoverageBase.jl/actions/workflows/CI.yml?query=branch%3Amaster)
+[![Code Coverage](https://codecov.io/gh/JuliaCI/CoverageBase.jl/branch/master/graph/badge.svg?token=bHLLbqNQQB)](https://codecov.io/gh/JuliaCI/CoverageBase.jl)
+
 
 A package for measuring the internal test coverage of the [Julia](http://julialang.org/) programming langauge.
 
