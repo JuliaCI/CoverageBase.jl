@@ -12,7 +12,7 @@ end
 @testset "locate source" begin
     thisfile = pathof(CoverageBase)
     @test fixpath(thisfile) == thisfile
-    @test fixpath("something/relative.jl") == "base/something/relative.jl"
+    @test fixpath(joinpath("something", "relative.jl")) == joinpath("base", "something", "relative.jl")
     files = [Coverage.FileCoverage(f[2], "", Coverage.CovCount[]) for f in Base._included_files]
     @test all(isabspath(c.filename) for c in files) || files
     fixpath!(files)
