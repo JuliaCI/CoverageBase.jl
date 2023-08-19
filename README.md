@@ -4,11 +4,11 @@
 [![Code Coverage](https://codecov.io/gh/JuliaCI/CoverageBase.jl/branch/master/graph/badge.svg?token=bHLLbqNQQB)](https://codecov.io/gh/JuliaCI/CoverageBase.jl)
 
 
-A package for measuring the internal test coverage of the [Julia](http://julialang.org/) programming langauge.
+A package for measuring the internal test coverage of the [Julia](http://julialang.org/) programming language.
 
 ## Installation
 
-You can install this on your local machine with
+You can install this on your local machine with:
 ```julia
 (v1.1) pkg> add https://github.com/JuliaCI/CoverageBase.jl.git
 ```
